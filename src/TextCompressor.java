@@ -47,22 +47,37 @@ public class TextCompressor {
             }
         }
         int max = 0;
+        int secondMax = 0;
         for (int i : map.values()) {
-            max = Math.max(i,max);
+            if (i > max)  {
+                secondMax = max;
+                max = i;
+            }
         }
         String mostCommon = "";
+        String secondCommon = "";
         for (String k : map.keySet()) {
             if(map.get(k) == max) {
                 mostCommon = k;
+                continue;
             }
+            if(map.get(k) == secondMax) {
+                secondCommon = k;
+            }
+
         }
 
         BinaryStdOut.write(mostCommon.length(),8);
         BinaryStdOut.write(mostCommon);
+        BinaryStdOut.write(secondCommon.length(),8);
+        BinaryStdOut.write(secondCommon);
 
         for (int i = 0; i < words.length; i++) {
             if (words[i].equals(mostCommon)) {
                 BinaryStdOut.write('@', 8);
+            }
+            else if (words[i].equals(secondCommon)){
+                BinaryStdOut.write('#', 8);
             }
             else {
                 BinaryStdOut.write(words[i]);
@@ -77,13 +92,17 @@ public class TextCompressor {
 
     private static void expand() {
         int length = BinaryStdIn.readInt(8);
+        int lengthTwo = BinaryStdIn.readInt(8);
         String special = "";
         for (int i = 0; i < length; i++) {
             special += BinaryStdIn.readChar();
         }
+        for (int i = 0; i < lengthTwo; i++) {
+
+        }
         String text = BinaryStdIn.readString();
 
-        String[] words = text.split("@");
+        String[] words = text.split("@|#");
 
         for (int i = 0; i < words.length; i++) {
             BinaryStdOut.write(words[i]);
