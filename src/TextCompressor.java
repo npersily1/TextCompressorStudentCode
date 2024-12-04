@@ -22,6 +22,7 @@
  ******************************************************************************/
 
 import java.util.Hashtable;
+import java.util.Map;
 
 /**
  *  The {@code TextCompressor} class provides static methods for compressing
@@ -35,21 +36,63 @@ public class TextCompressor {
 
         String s = BinaryStdIn.readString();
         String[] words = s.split(" ");
-        Hashtable<String, Integer> values = new Hashtable<>();
+        Hashtable<String, Integer> map = new Hashtable<>();
 
         for (int i = 0; i < words.length; i++) {
-            if(values.containsKey(words[i])) {
-                values.replace(words[i], 1+values.get(words[i]));
+            if(map.containsKey(words[i])) {
+                map.replace(words[i], 1+map.get(words[i]));
             }
             else {
-                values.put(words[i],1);
+                map.put(words[i],1);
             }
         }
+        int max = 0;
+        for (int i : map.values()) {
+            max = Math.max(i,max);
+        }
+        String mostCommon = "";
+        for (String k : map.keySet()) {
+            if(map.get(k) == max) {
+                mostCommon = k;
+            }
+        }
+
+        BinaryStdOut.write(mostCommon.length(),8);
+        BinaryStdOut.write(mostCommon);
+
+        for (int i = 0; i < words.length; i++) {
+            if (words[i].equals(mostCommon)) {
+                BinaryStdOut.write('@', 8);
+            }
+            else {
+                BinaryStdOut.write(words[i]);
+                BinaryStdOut.write(' ',8);
+            }
+
+        }
+
 
         BinaryStdOut.close();
     }
 
     private static void expand() {
+        int length = BinaryStdIn.readInt(8);
+        String special = "";
+        for (int i = 0; i < length; i++) {
+            special += BinaryStdIn.readChar();
+        }
+        String text = BinaryStdIn.readString();
+
+        String[] words = text.split("@");
+
+        for (int i = 0; i < words.length; i++) {
+            BinaryStdOut.write(words[i]);
+            BinaryStdOut.write(special);
+        }
+
+
+
+
 
         BinaryStdOut.close();
     }
