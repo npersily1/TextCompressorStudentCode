@@ -25,10 +25,10 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
- *  The {@code TextCompressor} class provides static methods for compressing
- *  and expanding natural language through textfile input.
+ * The {@code TextCompressor} class provides static methods for compressing
+ * and expanding natural language through textfile input.
  *
- *  @author Zach Blick, Noah Persily
+ * @author Zach Blick, Noah Persily
  */
 public class TextCompressor {
 
@@ -39,17 +39,19 @@ public class TextCompressor {
         Hashtable<String, Integer> map = new Hashtable<>();
 
         for (int i = 0; i < words.length; i++) {
-            if(map.containsKey(words[i])) {
-                map.replace(words[i], 1+map.get(words[i]));
-            }
-            else {
-                map.put(words[i],1);
+            if (map.containsKey(words[i])) {
+                map.replace(words[i], 1 + map.get(words[i]));
+            } else {
+                map.put(words[i], 1);
             }
         }
+
+
+
         int max = 0;
         int secondMax = 0;
         for (int i : map.values()) {
-            if (i > max)  {
+            if (i > max) {
                 secondMax = max;
                 max = i;
             }
@@ -57,31 +59,29 @@ public class TextCompressor {
         String mostCommon = "";
         String secondCommon = "";
         for (String k : map.keySet()) {
-            if(map.get(k) == max) {
+            if (map.get(k) == max) {
                 mostCommon = k;
                 continue;
             }
-            if(map.get(k) == secondMax) {
+            if (map.get(k) == secondMax) {
                 secondCommon = k;
             }
 
         }
 
-        BinaryStdOut.write(mostCommon.length(),8);
+        BinaryStdOut.write(mostCommon.length(), 8);
         BinaryStdOut.write(mostCommon);
-        BinaryStdOut.write(secondCommon.length(),8);
+        BinaryStdOut.write(secondCommon.length(), 8);
         BinaryStdOut.write(secondCommon);
 
         for (int i = 0; i < words.length; i++) {
             if (words[i].equals(mostCommon)) {
                 BinaryStdOut.write('@', 8);
-            }
-            else if (words[i].equals(secondCommon)){
+            } else if (words[i].equals(secondCommon)) {
                 BinaryStdOut.write('#', 8);
-            }
-            else {
+            } else {
                 BinaryStdOut.write(words[i]);
-                BinaryStdOut.write(' ',8);
+                BinaryStdOut.write(' ', 8);
             }
 
         }
@@ -97,27 +97,30 @@ public class TextCompressor {
         for (int i = 0; i < length; i++) {
             special += BinaryStdIn.readChar();
         }
+        String specialtwo = " ";
         for (int i = 0; i < lengthTwo; i++) {
-
+            specialtwo += BinaryStdIn.readChar();
         }
         String text = BinaryStdIn.readString();
 
-        String[] words = text.split("@|#");
 
-        for (int i = 0; i < words.length; i++) {
-            BinaryStdOut.write(words[i]);
-            BinaryStdOut.write(special);
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == '@') {
+                BinaryStdOut.write(special);
+            } else if (text.charAt(i) == '#') {
+                BinaryStdOut.write(specialtwo);
+            } else {
+                BinaryStdOut.write(text.charAt(i));
+            }
+
         }
-
-
-
 
 
         BinaryStdOut.close();
     }
 
     public static void main(String[] args) {
-        if      (args[0].equals("-")) compress();
+        if (args[0].equals("-")) compress();
         else if (args[0].equals("+")) expand();
         else throw new IllegalArgumentException("Illegal command line argument");
     }
