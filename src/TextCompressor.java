@@ -21,24 +21,35 @@
  *  = 43.54% compression ratio!
  ******************************************************************************/
 
+import java.util.Hashtable;
+
 /**
  *  The {@code TextCompressor} class provides static methods for compressing
  *  and expanding natural language through textfile input.
  *
- *  @author Zach Blick, YOUR NAME HERE
+ *  @author Zach Blick, Noah Persily
  */
 public class TextCompressor {
 
     private static void compress() {
 
-        // TODO: Complete the compress() method
+        String s = BinaryStdIn.readString();
+        String[] words = s.split(" ");
+        Hashtable<String, Integer> values = new Hashtable<>();
+
+        for (int i = 0; i < words.length; i++) {
+            if(values.containsKey(words[i])) {
+                values.replace(words[i], 1+values.get(words[i]));
+            }
+            else {
+                values.put(words[i],1);
+            }
+        }
 
         BinaryStdOut.close();
     }
 
     private static void expand() {
-
-        // TODO: Complete the expand() method
 
         BinaryStdOut.close();
     }
