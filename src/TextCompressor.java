@@ -45,7 +45,9 @@ public class TextCompressor {
                 map.put(words[i], 1);
             }
         }
-
+        // Put hash map into pair objects ArrayList
+        // Then Find the greatest and add it your array of thirty while the array isn't filled
+        // Then when I have the 30 things assign them to characters 200-230 and then do the same compression as before
 
 
         int max = 0;
