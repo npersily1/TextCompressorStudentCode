@@ -31,57 +31,62 @@ import java.util.Map;
  * @author Zach Blick, Noah Persily
  */
 public class TextCompressor {
+    public static final int BIT_COUNT = 12;
+    public static final int START = 257;
+    public static final int MAX = 1 << BIT_COUNT;
 
     private static void compress() {
 
         String s = BinaryStdIn.readString();
         TST tst = new TST();
-        int count = 128;
-        int max = 1 << 12;
-        for (int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < 256; i++) {
+            tst.insert("" + ((char) i), i);
+        }
+
+        int currentCode = START;
+        int length = s.length();
+        for (int i = 0; i < length; i++) {
             // find the longest prefix
             String prefix = tst.getLongestPrefix(s, i);
-            // write that code
-            int prefixCode = tst.lookup(prefix);
-            if (prefixCode != -1) {
-                BinaryStdOut.write(prefixCode);
-            }
-            if(max > count) {
-                char next = s.charAt(i);
+            BinaryStdOut.write(tst.lookup(prefix), BIT_COUNT);
 
+            if (currentCode < MAX && i + prefix.length() < length) {
+                String lookAhead = prefix + s.charAt(i + prefix.length());
+                tst.insert(lookAhead, currentCode++);
             }
 
+        }
 
-            }
-
-
+        BinaryStdOut.write(START - 1, BIT_COUNT);
         BinaryStdOut.close();
     }
 
     private static void expand() {
-        int length = BinaryStdIn.readInt(8);
-        int lengthTwo = BinaryStdIn.readInt(8);
-        String special = "";
-        for (int i = 0; i < length; i++) {
-            special += BinaryStdIn.readChar();
-        }
-        String specialtwo = " ";
-        for (int i = 0; i < lengthTwo; i++) {
-            specialtwo += BinaryStdIn.readChar();
-        }
-        String text = BinaryStdIn.readString();
 
+        String[] prefixes = new String[MAX];
 
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '@') {
-                BinaryStdOut.write(special);
-            } else if (text.charAt(i) == '#') {
-                BinaryStdOut.write(specialtwo);
+        for (int i = 0; i < START - 1; i++) {
+            prefixes[i] = "" + (char) i;
+        }
+        int codeCounter = START;
+
+        int code = BinaryStdIn.readInt(12);
+        while (code != START - 1) {
+
+            BinaryStdOut.write(prefixes[code]);
+
+            int nextCode = BinaryStdIn.readInt(BIT_COUNT);
+
+            if(prefixes[nextCode] == null) {
+                prefixes[codeCounter] = prefixes[code] + prefixes[code].charAt(0);
             } else {
-                BinaryStdOut.write(text.charAt(i));
+                prefixes[codeCounter] = prefixes[code] + prefixes[nextCode].charAt(0);
             }
 
+            code = nextCode;
+
         }
+
 
 
         BinaryStdOut.close();
