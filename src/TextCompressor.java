@@ -35,58 +35,24 @@ public class TextCompressor {
     private static void compress() {
 
         String s = BinaryStdIn.readString();
-        String[] words = s.split(" ");
-        Hashtable<String, Integer> map = new Hashtable<>();
-
-        for (int i = 0; i < words.length; i++) {
-            if (map.containsKey(words[i])) {
-                map.replace(words[i], 1 + map.get(words[i]));
-            } else {
-                map.put(words[i], 1);
+        TST tst = new TST();
+        int count = 128;
+        int max = 1 << 12;
+        for (int i = 0; i < s.length(); i++) {
+            // find the longest prefix
+            String prefix = tst.getLongestPrefix(s, i);
+            // write that code
+            int prefixCode = tst.lookup(prefix);
+            if (prefixCode != -1) {
+                BinaryStdOut.write(prefixCode);
             }
-        }
-        // Put hash map into pair objects ArrayList
-        // Then Find the greatest and add it your array of thirty while the array isn't filled
-        // Then when I have the 30 things assign them to characters 200-230 and then do the same compression as before
+            if(max > count) {
+                char next = s.charAt(i);
 
-
-        int max = 0;
-        int secondMax = 0;
-        for (int i : map.values()) {
-            if (i > max) {
-                secondMax = max;
-                max = i;
-            }
-        }
-        String mostCommon = "";
-        String secondCommon = "";
-        for (String k : map.keySet()) {
-            if (map.get(k) == max) {
-                mostCommon = k;
-                continue;
-            }
-            if (map.get(k) == secondMax) {
-                secondCommon = k;
             }
 
-        }
 
-        BinaryStdOut.write(mostCommon.length(), 8);
-        BinaryStdOut.write(mostCommon);
-        BinaryStdOut.write(secondCommon.length(), 8);
-        BinaryStdOut.write(secondCommon);
-
-        for (int i = 0; i < words.length; i++) {
-            if (words[i].equals(mostCommon)) {
-                BinaryStdOut.write('@', 8);
-            } else if (words[i].equals(secondCommon)) {
-                BinaryStdOut.write('#', 8);
-            } else {
-                BinaryStdOut.write(words[i]);
-                BinaryStdOut.write(' ', 8);
             }
-
-        }
 
 
         BinaryStdOut.close();
