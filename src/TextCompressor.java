@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class TextCompressor {
     public static final int BIT_COUNT = 12;
-    public static final int START = 257;
+    public static final int EOF = 256;
     public static final int MAX = 1 << BIT_COUNT;
 
     private static void compress() {
@@ -43,7 +43,7 @@ public class TextCompressor {
             tst.insert("" + ((char) i), i);
         }
 
-        int currentCode = START;
+        int currentCode = EOF + 1;
         int length = s.length();
         for (int i = 0; i < length; i++) {
             // find the longest prefix
@@ -57,7 +57,7 @@ public class TextCompressor {
 
         }
 
-        BinaryStdOut.write(START - 1, BIT_COUNT);
+        BinaryStdOut.write(EOF, BIT_COUNT);
         BinaryStdOut.close();
     }
 
@@ -65,28 +65,35 @@ public class TextCompressor {
 
         String[] prefixes = new String[MAX];
 
-        for (int i = 0; i < START - 1; i++) {
+        for (int i = 0; i < EOF - 1; i++) {
             prefixes[i] = "" + (char) i;
         }
-        int codeCounter = START;
+        int codeCounter = EOF + 1;
 
-        int code = BinaryStdIn.readInt(12);
-        while (code != START - 1) {
+        int code = BinaryStdIn.readInt(BIT_COUNT);
+        while (code != EOF) {
 
             BinaryStdOut.write(prefixes[code]);
 
             int nextCode = BinaryStdIn.readInt(BIT_COUNT);
 
-            if(prefixes[nextCode] == null) {
+            if (codeCounter > MAX) {
+                code = nextCode;
+                continue;
+            }
+
+            if (prefixes[nextCode] == null) {
                 prefixes[codeCounter] = prefixes[code] + prefixes[code].charAt(0);
+
             } else {
                 prefixes[codeCounter] = prefixes[code] + prefixes[nextCode].charAt(0);
             }
 
+            codeCounter++;
+
             code = nextCode;
 
         }
-
 
 
         BinaryStdOut.close();
