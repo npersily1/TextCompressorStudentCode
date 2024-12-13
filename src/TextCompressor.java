@@ -21,8 +21,7 @@
  *  = 43.54% compression ratio!
  ******************************************************************************/
 
-import java.util.Hashtable;
-import java.util.Map;
+
 
 /**
  * The {@code TextCompressor} class provides static methods for compressing
@@ -37,30 +36,30 @@ public class TextCompressor {
 
     private static void compress() {
 
-
+        // Populate TST with ascii values
         TST tst = new TST();
         for (int i = 0; i < EOF; i++) {
             tst.insert("" + ((char) i), i);
         }
 
         int currentCode = EOF + 1;
-
         String s = BinaryStdIn.readString();
         int length = s.length();
 
+        // For every letter
         for (int i = 0; i < length; i++) {
             // Find the longest prefix and write
             String prefix = tst.getLongestPrefix(s, i);
             BinaryStdOut.write(tst.lookup(prefix), BIT_COUNT);
 
-
+            // Increment i depending on how long the prefix written out is
             i += prefix.length() - 1;
 
+            // If you are not out of bounds add a new prefix
             if (currentCode < MAX && i + 1 < length) {
 
                 tst.insert(prefix + s.charAt(1 + i), currentCode++);
             }
-
         }
 
         BinaryStdOut.write(EOF, BIT_COUNT);
@@ -75,21 +74,21 @@ public class TextCompressor {
             prefixes[i] = "" + (char) i;
         }
         int codeCounter = EOF + 1;
-
-
         int code = BinaryStdIn.readInt(BIT_COUNT);
 
         while (true) {
-
+            // Read the next code and write out the current code
             int nextCode = BinaryStdIn.readInt(BIT_COUNT);
             BinaryStdOut.write(prefixes[code]);
 
+            // If done, break
             if (nextCode == EOF) {
                 break;
             }
 
-
+            // If in bounds
             if (codeCounter < MAX) {
+                // If in edge case, use appropriate prefix
                 if (prefixes[nextCode] == null) {
                     prefixes[codeCounter] = prefixes[code] + prefixes[code].charAt(0);
 
