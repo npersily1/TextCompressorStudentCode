@@ -37,22 +37,28 @@ public class TextCompressor {
 
     private static void compress() {
 
-        String s = BinaryStdIn.readString();
+
         TST tst = new TST();
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < EOF; i++) {
             tst.insert("" + ((char) i), i);
         }
 
         int currentCode = EOF + 1;
+
+        String s = BinaryStdIn.readString();
         int length = s.length();
+
         for (int i = 0; i < length; i++) {
-            // find the longest prefix
+            // Find the longest prefix and write
             String prefix = tst.getLongestPrefix(s, i);
             BinaryStdOut.write(tst.lookup(prefix), BIT_COUNT);
 
-            if (currentCode < MAX && i + prefix.length() < length) {
-                String lookAhead = prefix + s.charAt(i + prefix.length());
-                tst.insert(lookAhead, currentCode++);
+
+            i += prefix.length() - 1;
+
+            if (currentCode < MAX && i + 1 < length) {
+
+                tst.insert(prefix + s.charAt(1 + i), currentCode++);
             }
 
         }
@@ -62,34 +68,36 @@ public class TextCompressor {
     }
 
     private static void expand() {
-
+        // Populate map with ascii characters
         String[] prefixes = new String[MAX];
 
-        for (int i = 0; i < EOF - 1; i++) {
+        for (int i = 0; i < EOF; i++) {
             prefixes[i] = "" + (char) i;
         }
         int codeCounter = EOF + 1;
 
-        int code = BinaryStdIn.readInt(BIT_COUNT);
-        while (code != EOF) {
 
-            BinaryStdOut.write(prefixes[code]);
+        int code = BinaryStdIn.readInt(BIT_COUNT);
+
+        while (true) {
 
             int nextCode = BinaryStdIn.readInt(BIT_COUNT);
+            BinaryStdOut.write(prefixes[code]);
 
-            if (codeCounter > MAX) {
-                code = nextCode;
-                continue;
+            if (nextCode == EOF) {
+                break;
             }
 
-            if (prefixes[nextCode] == null) {
-                prefixes[codeCounter] = prefixes[code] + prefixes[code].charAt(0);
 
-            } else {
-                prefixes[codeCounter] = prefixes[code] + prefixes[nextCode].charAt(0);
+            if (codeCounter < MAX) {
+                if (prefixes[nextCode] == null) {
+                    prefixes[codeCounter] = prefixes[code] + prefixes[code].charAt(0);
+
+                } else {
+                    prefixes[codeCounter] = prefixes[code] + prefixes[nextCode].charAt(0);
+                }
+                codeCounter++;
             }
-
-            codeCounter++;
 
             code = nextCode;
 
